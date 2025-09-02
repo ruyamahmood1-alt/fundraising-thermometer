@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Fundraising Goal Thermometer</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #f0f4f8;
+      margin: 0;
+      padding: 20px;
+      text-align: center;
+      overflow-x: hidden;
+    }
+
+    .container {
+      max-width: 300px;
+      margin: auto;
+      padding: 20px;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    }
+
+    h1 {
+      color: #e63946;
+      margin-bottom: 30px;
+      font-size: 22px;
+    }
+
+    .thermometer {
+      position: relative;
+      height: 300px;
+      width: 60px;
+      background: #eee;
+      border-radius: 30px;
+      margin: 0 auto;
+      overflow: hidden;
+      border: 3px solid #ccc;
+    }
+
+    .fill {
+      position: absolute;
+      bottom: 0;
+      width: 100%;
+      background: linear-gradient(to top, #e63946, #f77f7f);
+      transition: height 1s ease-in-out;
+      border-radius: 30px 30px 0 0;
+    }
+
+    .ticks {
+      position: absolute;
+      height: 100%;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 5px 0;
+      z-index: 1;
+    }
+
+    .tick {
+      height: 1px;
+      background: #999;
+      position: relative;
+    }
+
+    .tick::after {
+      content: attr(data-label);
+      position: absolute;
+      left: 70px;
+      top: -6px;
+      font-size: 12px;
+      color: #555;
+    }
+
+    .percentage-display {
+      font-size: 24px;
+      margin-top: 20px;
+      font-weight: bold;
+      color: #e63946;
+    }
+
+    #statusText, #remainingText {
+      font-size: 16px;
+      margin: 10px 0;
+    }
+
+    .confetti {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      overflow: hidden;
+      z-index: 9999;
+    }
+
+    .confetti-piece {
+      width: 10px;
+      height: 10px;
+      position: absolute;
+      background-color: red;
+      animation: fall 3s linear infinite;
+      opacity: 0.8;
+    }
+
+    @keyframes fall {
+      0% {
+        transform: translateY(0) rotate(0deg);
+      }
+      100% {
+        transform: translateY(100vh) rotate(360deg);
+      }
+    }
+
+    .congrats-message {
+      font-size: 22px;
+      color: #2a9d8f;
+      font-weight: bold;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🚀 Help Us Reach Our Goal!</h1>
+
+    <div class="thermometer">
+      <div class="fill" id="fill"></div>
+      <div class="ticks" id="ticksContainer"></div>
+    </div>
+
+    <div class="percentage-display" id="percentageDisplay">0%</div>
+    <p id="statusText">Raised $0 of $0</p>
+    <p id="remainingText"></p>
+    <div class="congrats-message" id="congratsMessage"></div>
+  </div>
+
+  <div class="confetti" id="confetti"></div>
+
+  <script>
+    // 🎯 EDIT THESE VALUES ONLY
+    const goalAmount = 1000;
+    const raisedAmount = 20;
+
+    const percentage = Math.min((raisedAmount / goalAmount) * 100, 100);
+    const remaining = Math.max(goalAmount - raisedAmount, 0);
+
+    // Fill thermometer
+    document.getElementById("fill").style.height = percentage + "%";
+    document.getElementById("percentageDisplay").innerText = `${Math.round(percentage)}%`;
+    document.getElementById("statusText").innerText = `Raised $${raisedAmount} of $${goalAmount}`;
+    document.getElementById("remainingText").innerText = remaining > 0 ? `$${remaining} left to go` : `Goal reached!`;
+
+    // Add Ticks
+    const tickSteps = 5;
+    const tickContainer = document.getElementById("ticksContainer");
+    for (let i = tickSteps; i >= 0; i--) {
+      const tick = document.createElement("div");
+      tick.className = "tick";
+      const value = Math.round((i / tickSteps) * goalAmount);
+      tick.setAttribute("data-label", `$${value}`);
+      tickContainer.appendChild(tick);
+    }
+
+    // 🎉 Confetti celebration if goal met or exceeded
+    if (raisedAmount >= goalAmount) {
+      showConfetti();
+      document.getElementById("congratsMessage").innerText = "🎉 Congratulations! We reached our goal!";
+    }
+
+    function showConfetti() {
+      const confettiContainer = document.getElementById("confetti");
+      for (let i = 0; i < 100; i++) {
+        const confetti = document.createElement("div");
+        confetti.className = "confetti-piece";
+        confetti.style.left = Math.random() * 100 + "vw";
+        confetti.style.backgroundColor = randomColor();
+        confetti.style.animationDuration = (Math.random() * 2 + 2) + "s";
+        confetti.style.width = confetti.style.height = (Math.random() * 8 + 6) + "px";
+        confettiContainer.appendChild(confetti);
+      }
+      setTimeout(() => {
+        confettiContainer.innerHTML = "";
+      }, 5000);
+    }
+
+    function randomColor() {
+      const colors = ["#e63946", "#f1c40f", "#2ecc71", "#3498db", "#9b59b6", "#e67e22"];
+      return colors[Math.floor(Math.random() * colors.length)];
+    }
+  </script>
+</body>
+</html>
